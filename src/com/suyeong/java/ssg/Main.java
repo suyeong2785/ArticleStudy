@@ -5,20 +5,22 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.suyeong.java.ssg.dto.Article;
+import com.suyeong.java.ssg.dto.Member;
 
 public class Main {
 	public static List<Article> articles;
-
+	public static List<Member> members;
 	static {
 		articles = new ArrayList<>();
+		members = new ArrayList<>();
 	}
 
 	public static void main(String[] args) {
 		System.out.println("== 프로그램 시작 ==");
 
 		Scanner scanner = new Scanner(System.in);
-		int lastArticleId = 0;
 		makeTestData();
+		int lastArticleId = articles.size();
 
 		while (true) {
 
@@ -79,7 +81,7 @@ public class Main {
 					}
 
 				}
-				System.out.println("번호 | 조회 | 제목");
+				System.out.println(" 번호 | 조회 | 제목 ");
 				for (int i = foundArticle.size() - 1; i >= 0; i--) {
 
 					Article article = foundArticle.get(i);
@@ -167,32 +169,91 @@ public class Main {
 				System.out.printf("내용 : ");
 				String body = scanner.nextLine();
 				foundArticle.body = body;
-				System.out.printf("%d번 게시물이 수정되었습니다.\n",id);
+				System.out.printf("%d번 게시물이 수정되었습니다.\n", id);
 			}
-			
-			else if(command.equals("member join")) {
-				System.out.print("로그인 아이디: ");
-				String logInId = scanner.nextLine();
-				
-				while(true) {
-					
+
+			else if (command.equals("member join")) {
+
+				String logInId = null;
+				while (true) {
+					System.out.print("로그인 아이디: ");
+					logInId = scanner.nextLine();
+
+					if (isjoinable(logInId) == false) {
+						System.out.println("이미 존재하는 아이디 입니다.");
+						continue;
+					}
+					break;
+				}
+				String logInPassword = null;
+				while (true) {
 					System.out.print("로그인 비밀번호: ");
-					String logInPassword = scanner.nextLine();
+					logInPassword = scanner.nextLine();
 					System.out.print("로그인 비밀번호 확인: ");
+
 					String logInPasswordConfirm = scanner.nextLine();
-					
-					if(logInPassword.equals(logInPasswordConfirm)) {
+
+					if (logInPassword.equals(logInPasswordConfirm)) {
 						break;
 					}
 					System.out.println("일치하지 않습니다.다시 입력해 주시기 바랍니다.");
 					continue;
 				}
-				System.out.printf("%s님 회원가입을 축하드립니다.\n",logInId);
+				System.out.print("이름 : ");
+				String name = scanner.nextLine();
+
+				System.out.printf("%s님 회원가입을 축하드립니다.\n", logInId);
+
+				Member member = new Member(logInId, logInPassword, name);
+				members.add(member);
+			} else if (command.equals("member login")) {
+
+				while (true) {
+
+					System.out.print("로그인 아이디: ");
+					String logInId = scanner.nextLine();
+					System.out.print("로그인 비밀번호: ");
+					String logInPassword = scanner.nextLine();
+
+					if (isOkayToLogin(logInId, logInPassword) == false) {
+						System.out.println("입력하신 정보와 일치하는 계정이 없습니다.다시 입력해주시기 바랍니다.");
+					}
+					break;
+				}
 			}
 		}
 
 		System.out.println("== 프로그램 끝 ==");
 
+	}
+
+	private static boolean isOkayToLogin(String logInId, String logInPassword) {
+		
+		return false;
+	}
+
+	private static boolean isjoinable(String logInId) {
+		int index = getLogInByid(logInId);
+
+		if (index == -1) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private static int getLogInByid(String logInId) {
+		int i = 0;
+		for (Member member : members) {
+			if (member.logInId.equals(logInId)) {
+				return i;
+
+			}
+			i++;
+		}
+
+		return -1;
 	}
 
 	private static void makeTestData() {
